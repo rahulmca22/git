@@ -1,57 +1,86 @@
-import React, { useState } from 'react'
+import React, { Fragment, useEffect, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import { useForm } from 'react-hook-form';
+import Nav from './Nav';
 
 function Register() {
-const userDetail = {
-  name: "",
-  email: "",
-  password: ""
-}
-const [data, setData] = useState(userDetail);
-  const handleInput = (d) =>
-  {
-console.log(d.target.value);
-console.log(d.target.name);
-const name = d.target.name;
-const value = d.target.value;
+    const [data, setData] = useState({});
+    const [prevdata, setPrevdata] = useState(JSON.parse(localStorage.getItem('userdata')) || []);
+    const navigate = useNavigate();
 
-setData({...data, [name]:value})
+    const myref = useRef(null);
 
-  }
+    // const {
+    //     register,
+    //     handleSubmit,
+    //     formState: { errors },
+    // } = useForm();
 
-const handleSubmit = (d) => {
-  d.preventDefault();
+    const onSubmit = (data) => {
+        setData(data);
+        alert(data.username);
+    };
 
-  const getData = JSON.parse(localStorage.getItem("user") || "[]");
+    const getData = (event) => {
+        setData({
+            ...data,
+            [event.target.name]: event.target.value
+        });
+        console.log(data);
+    };
 
-  let arr = [];
-  arr = [...getData];
-  arr.push(data);
+    const register = () => {
+        prevdata.push(data);
+        console.log('prevdata', prevdata);
+        localStorage.setItem('userdata', JSON.stringify(prevdata));
+        toast.success('registratiion successful!');
+         navigate('/sign');
+    };
 
-localStorage.setItem("user", JSON.stringify(arr));
-}
+//    catche   
 
-  console.log(data);
-  return (
-    <div>
-      <div>
-<form onSubmit={handleSubmit}>
+    useEffect(() => {
+        console.log(prevdata);
+        myref.current.focus();
+    }, []);
 
-  <div>
-    <p>sign up</p>
-  </div>
-  <div className='account'>
-    <input type='text' name='name' placeholder='enter username' onChange={handleInput} />
-    <input type='email' name='email' placeholder='enter email' onChange={handleInput} />
-    <input type='password' name='password' placeholder='enter password' onChange={handleInput} />
-    <p>Already have an account ? <a href='/login'>Login</a></p>
-  </div>
-  <button>Signup</button>
-</form>
-</div>
+    return (
+        <Fragment>
+        <div>
+<Nav />
 
+       
+            <div className='container'>
+                <div className='row mydiv3'>
+                    <div className='col-lg-4 mt-3 text-center'>
+                        <h2>REGISTER HERE</h2>
+                            <input ref={myref} type='text' className='form-control mb-2' placeholder='enter name' name='name' onInput={getData} />
+                            <input type='email' className='form-control mb-2' placeholder='enter email' name='email' onInput={getData} />
+                            <input type='number' className='form-control mb-2' placeholder='enter mobile' name='mobile' onInput={getData} />
+                            <input type='text' className='form-control mb-2' placeholder='enter address' name='address' onInput={getData} />
+                            <input type='password' className='form-control mb-2' placeholder='enter password' name='password' onInput={getData} />
+                            <button onClick={register} type="button" className="btn btn-warning w-100 mt-3">Warning</button>
+                        
+{/*                         
+                        <form onSubmit={handleSubmit(onSubmit)}>
 
-      </div>
-  )
+                            <input type='text' className='form-control mb-2' placeholder='enter name' {...register ('username', {required:true})} />
+                            {errors.username && <span>this field is required</span>}
+
+                            <input type='email' className='form-control mb-2' placeholder='enter email' {...register ('email', {required:true})} />
+                            {errors.email && <span>email is required!</span>}
+                            <input type='number' className='form-control mb-2' placeholder='enter mobile' name='mobile'  />
+                            <input type='text' className='form-control mb-2' placeholder='enter address' name='address'  />
+                            <input type='password' className='form-control mb-2' placeholder='enter password' name='password'/>
+                            <input type='submit'/>
+                        </form> */}
+                    </div>
+                </div>
+            </div></div>
+            <ToastContainer />
+        </Fragment>
+    )
 }
 
 export default Register
